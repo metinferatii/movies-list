@@ -9,12 +9,27 @@ function MoviesList(props) {
     const [showModal, setShowModal] = React.useState(null);
     const [searchTerm, setSearchTerm] = React.useState("");
     const [searchResults, setSearchResults] = React.useState([]);
+    const [movies, setMovies] = React.useState([]);
+
+    useEffect(() => {
+        setMovies(props.data.user.Search);
+    }, [props.data.user.Search]);
+
     
+
   const handleSearch = (searchTerm) => {
-    fetch(`http://www.omdbapi.com/?s=${searchTerm}&apikey=${process.env.REACT_API_KEY}`)
-      .then((res) => res.json())
-      .then((data) => setSearchResults(data.Search || []))
-      .catch((error) => console.log(error));
+    setSearchTerm(searchTerm);
+    if (searchTerm !== "") {
+      const newMovieList = movies.filter((movie) => {
+        return Object.values(movie)
+          .join(" ")
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase());
+      });
+      setSearchResults(newMovieList);
+    } else {
+      setSearchResults(movies);
+    }
   };
 
   const moviesToDisplay = searchResults.length > 0 ? searchResults : props.data.user.Search;
